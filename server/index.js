@@ -9,6 +9,7 @@ import multer from 'multer'
 import session from 'express-session'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import rateLimit from 'express-rate-limit'
 import {
   dbGetAllServices, dbGetService, dbInsertService, dbUpdateService, dbDeleteService,
   dbGetAllDemands, dbGetDemandsByUser, dbInsertDemand, dbUpdateDemand,
@@ -52,6 +53,50 @@ if (IS_PROD) {
 }
 
 app.use(express.json())
+
+// ── Rate limiting ──
+// Global: 200 requests per minute per IP
+const globalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop de requetes. Reessayez dans une minute.' },
+})
+app.use(globalLimiter)
+
+// Strict: login & register — 10 attempts per 15 minutes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Trop de tentatives de connexion. Reessayez dans 15 minutes.' },
+})
+app.use('/api/auth/login', authLimiter)
+app.use('/api/auth/register', authLimiter)
+
+// AI chat — 30 requests per minute per IP
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  message: { error: 'Limite de requetes IA atteinte. Reessayez dans une minute.' },
+})
+app.use('/api/chat', chatLimiter)
+
+// Upload — 20 per minute
+const uploadLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: { error: 'Trop de fichiers uploades. Reessayez dans une minute.' },
+})
+app.use('/api/upload', uploadLimiter)
+
+// Export — 5 per minute (prevent data scraping)
+const exportLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  message: { error: 'Limite d\'export atteinte.' },
+})
+app.use('/api/export', exportLimiter)
 
 // ── JWT Auth middleware ──
 function requireAuth(req, res, next) {
