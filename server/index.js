@@ -49,7 +49,7 @@ if (IS_PROD) {
     credentials: true,
   }))
 } else {
-  app.use(cors({ origin: true, credentials: true }))
+  app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:3001', 'http://127.0.0.1:5173'], credentials: true }))
 }
 
 app.use(express.json())
@@ -184,7 +184,7 @@ try {
       role: 'dsi',
     })
     console.log(`Default admin user created: ${adminEmail}`)
-    if (!IS_PROD) console.log(`Default password: ${adminPassword} (change immediately in production)`)
+    
   }
 } catch (e) {
   console.error('Failed to seed admin user:', e.message)
@@ -481,8 +481,15 @@ app.get('/api/export/:type', requireDSI, (req, res) => {
 app.post('/api/users/import', requireDSI, upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Aucun fichier' })
 
+  // Validate that the file is within the uploads directory
+  const uploadsDir = join(__dirname, 'uploads')
+  const filePath = require('path').resolve(req.file.path)
+  if (!filePath.startsWith(uploadsDir)) {
+    return res.status(400).json({ error: 'Chemin de fichier invalide' })
+  }
+
   try {
-    const content = require('fs').readFileSync(req.file.path, 'utf-8')
+    const content = require('fs').readFileSync(filePath, 'utf-8')
     const lines = content.split('\n').filter((l) => l.trim())
     if (lines.length < 2) return res.status(400).json({ error: 'Fichier vide ou invalide' })
 
@@ -737,7 +744,7 @@ async function sendEmail(to, subject, html) {
     console.log(`[EMAIL] Envoyé à ${to}: ${subject}`)
     return true
   } catch (e) {
-    console.error(`[EMAIL] Echec envoi à ${to}:`, e.message)
+    console.error('[EMAIL] Echec envoi:', e.message)
     return false
   }
 }
@@ -1523,7 +1530,7 @@ app.post('/api/glpi/sync', async (req, res) => {
           }).catch(() => {})
         }
       } catch (e) {
-        console.error(`Sync failed for ${glpiTicketId}:`, e.message)
+        console.error('Sync failed for ticket:', String(glpiTicketId).replace(/[^a-zA-Z0-9-]/g, ''), e.message)
       }
     }
 

@@ -209,7 +209,7 @@ export default function ConversationView() {
       {/* Input bar */}
       {showInput && (
         <div className="sticky-input-bar">
-          {pendingImage && (
+          {pendingImage && pendingImage.url.startsWith('blob:') && (
             <div className="mx-auto mb-2 flex max-w-[672px] items-center gap-3 rounded-lg border px-3 py-2" style={{ borderColor: 'var(--ai-md)', background: 'var(--ai-lt)' }}>
               <img src={pendingImage.url} alt="Preview" className="h-12 w-12 rounded object-cover" />
               <span className="flex-1 text-[12px] font-medium" style={{ color: 'var(--ai)' }}>Capture jointe</span>
