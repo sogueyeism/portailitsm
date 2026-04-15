@@ -24,7 +24,8 @@ export default function ConversationView() {
   const reset = useChatStore((s) => s.reset)
 
   const [inputValue, setInputValue] = useState('')
-  const [pendingImage, setPendingImage] = useState<{ url: string; file: File } | null>(null)
+  const [pendingFile, setPendingFile] = useState<File | null>(null)
+  const [pendingPreview, setPendingPreview] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -40,25 +41,26 @@ export default function ConversationView() {
 
   const handleSend = useCallback(async () => {
     const text = inputValue.trim()
-    if ((!text && !pendingImage) || isLoading) return
+    if ((!text && !pendingFile) || isLoading) return
     setInputValue('')
 
     let imageUrl: string | undefined
-    if (pendingImage) {
+    if (pendingFile) {
       setUploading(true)
       try {
         const form = new FormData()
-        form.append('image', pendingImage.file)
+        form.append('image', pendingFile)
         const res = await fetch(`${API_BASE}/api/upload`, { method: 'POST', body: form })
         const data = await res.json()
         if (data.success) imageUrl = `${API_BASE}${data.url}`
       } catch {}
       setUploading(false)
-      setPendingImage(null)
+      setPendingFile(null)
+      setPendingPreview(null)
     }
 
     sendMessage(text, imageUrl)
-  }, [inputValue, isLoading, pendingImage, sendMessage])
+  }, [inputValue, isLoading, pendingFile, sendMessage])
 
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() }
@@ -71,7 +73,13 @@ export default function ConversationView() {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) { setPendingImage({ url: URL.createObjectURL(file), file }); e.target.value = '' }
+    if (!file) return
+    setPendingFile(file)
+    // Generate safe data URL preview via FileReader
+    const reader = new FileReader()
+    reader.onload = () => { if (typeof reader.result === 'string') setPendingPreview(reader.result) }
+    reader.readAsDataURL(file)
+    e.target.value = ''
   }
 
   const handleConfirm = (ticket: AITicketData) => {
@@ -209,11 +217,11 @@ export default function ConversationView() {
       {/* Input bar */}
       {showInput && (
         <div className="sticky-input-bar">
-          {pendingImage && pendingImage.url.startsWith('blob:') && (
+          {pendingFile && (
             <div className="mx-auto mb-2 flex max-w-[672px] items-center gap-3 rounded-lg border px-3 py-2" style={{ borderColor: 'var(--ai-md)', background: 'var(--ai-lt)' }}>
-              <img src={pendingImage.url} alt="Preview" className="h-12 w-12 rounded object-cover" />
-              <span className="flex-1 text-[12px] font-medium" style={{ color: 'var(--ai)' }}>Capture jointe</span>
-              <button onClick={() => { URL.revokeObjectURL(pendingImage.url); setPendingImage(null) }} className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none" style={{ background: 'rgba(74,29,150,.1)', color: 'var(--ai)' }}>
+              {pendingPreview && <img src={pendingPreview} alt="Preview" className="h-12 w-12 rounded object-cover" />}
+              <span className="flex-1 text-[12px] font-medium" style={{ color: 'var(--ai)' }}>{pendingFile.name}</span>
+              <button onClick={() => { setPendingFile(null); setPendingPreview(null) }} className="flex h-6 w-6 cursor-pointer items-center justify-center rounded border-none" style={{ background: 'rgba(74,29,150,.1)', color: 'var(--ai)' }}>
                 <svg viewBox="0 0 14 14" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round"><line x1="2" y1="2" x2="12" y2="12" /><line x1="12" y1="2" x2="2" y2="12" /></svg>
               </button>
             </div>
@@ -232,7 +240,7 @@ export default function ConversationView() {
               onChange={(e) => { setInputValue(e.target.value); autoResize(e.target) }}
               onKeyDown={handleKey}
             />
-            <button className="sticky-send" disabled={isLoading || uploading || (!inputValue.trim() && !pendingImage)} onClick={handleSend}>
+            <button className="sticky-send" disabled={isLoading || uploading || (!inputValue.trim() && !pendingFile)} onClick={handleSend}>
               {uploading ? (
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
