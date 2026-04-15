@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "./styles/ism-tokens.css";
+@import "./styles/home.css";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--color-ism-bg);
+    color: var(--color-ism-text-1);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+}

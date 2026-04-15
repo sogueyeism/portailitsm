@@ -1,0 +1,14 @@
+node_modules
+dist
+.env
+server/.env
+server/settings.json
+server/portail.db
+server/portail.db-wal
+server/portail.db-shm
+server/uploads/*
+!server/uploads/.gitkeep
+server/node_modules
+*.log
+.claude
+.claude*

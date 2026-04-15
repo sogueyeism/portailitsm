@@ -1,0 +1,156 @@
+/* ══════════════════════════════════════════════════════════
+   ISM Design Tokens
+   Extracted from glpi-ism-final.html :root
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Raw CSS custom properties (usable anywhere via var()) ── */
+:root {
+  /* Brown palette */
+  --brown-900: #2A1400;
+  --brown-800: #3D1F00;
+  --brown-700: #4F2900;
+  --brown-600: #6B3800;
+  --brown-200: #C4956A;
+  --brown-50:  #FAF3EB;
+
+  /* Orange palette */
+  --orange-600: #B5620E;
+  --orange-500: #D4731A;
+  --orange-400: #E8831A;
+  --orange-300: #F09A42;
+  --orange-200: #F7C48A;
+  --orange-100: #FDEBD3;
+  --orange-50:  #FFF7EE;
+
+  /* Surfaces & backgrounds */
+  --bg:        #F4EDE4;
+  --surface:   #FFFFFF;
+  --surface-2: #FBF7F2;
+
+  /* Borders */
+  --border:   #E8DCCF;
+  --border-2: #D4C4AE;
+
+  /* Text */
+  --text-1: #1A0C00;
+  --text-2: #5C3D1E;
+  --text-3: #9C7A55;
+
+  /* Accent */
+  --accent:    #D4731A;
+  --accent-dk: #B5620E;
+  --accent-lt: #FFF0E0;
+  --accent-md: #F7C48A;
+
+  /* Semantic — success */
+  --success:    #1A7A4A;
+  --success-lt: #E6F5EE;
+
+  /* Semantic — info */
+  --info:    #1A5E9C;
+  --info-lt: #E6F0FB;
+
+  /* Semantic — warning */
+  --warn:    #8A5A00;
+  --warn-lt: #FDF3DC;
+
+  /* Semantic — danger */
+  --danger:    #9C2020;
+  --danger-lt: #FCEAEA;
+
+  /* AI / purple */
+  --ai:    #4A1D96;
+  --ai-lt: #F5F0FF;
+  --ai-md: #C4B5FD;
+  --ai-dk: #3B0764;
+
+  /* Border radii */
+  --r-xs:  4px;
+  --r-sm:  8px;
+  --r:     12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
+  --r-2xl: 28px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(61, 31, 0, .08), 0 1px 2px rgba(61, 31, 0, .05);
+  --shadow:    0 4px 16px rgba(61, 31, 0, .10), 0 2px 6px rgba(61, 31, 0, .06);
+  --shadow-lg: 0 16px 48px rgba(61, 31, 0, .16), 0 4px 14px rgba(61, 31, 0, .08);
+  --shadow-ai: 0 8px 32px rgba(74, 29, 150, .18), 0 2px 8px rgba(74, 29, 150, .1);
+}
+
+/* ── Tailwind @theme — registers custom colors, fonts,
+      radii & shadows so they become utility classes
+      (e.g. bg-brown-800, text-ism-text-1, shadow-ism, rounded-ism-xl) ── */
+@theme {
+  /* Brown */
+  --color-brown-900: #2A1400;
+  --color-brown-800: #3D1F00;
+  --color-brown-700: #4F2900;
+  --color-brown-600: #6B3800;
+  --color-brown-200: #C4956A;
+  --color-brown-50:  #FAF3EB;
+
+  /* Orange */
+  --color-orange-600: #B5620E;
+  --color-orange-500: #D4731A;
+  --color-orange-400: #E8831A;
+  --color-orange-300: #F09A42;
+  --color-orange-200: #F7C48A;
+  --color-orange-100: #FDEBD3;
+  --color-orange-50:  #FFF7EE;
+
+  /* Surfaces */
+  --color-ism-bg:        #F4EDE4;
+  --color-ism-surface:   #FFFFFF;
+  --color-ism-surface-2: #FBF7F2;
+
+  /* Borders */
+  --color-ism-border:   #E8DCCF;
+  --color-ism-border-2: #D4C4AE;
+
+  /* Text */
+  --color-ism-text-1: #1A0C00;
+  --color-ism-text-2: #5C3D1E;
+  --color-ism-text-3: #9C7A55;
+
+  /* Accent */
+  --color-accent:    #D4731A;
+  --color-accent-dk: #B5620E;
+  --color-accent-lt: #FFF0E0;
+  --color-accent-md: #F7C48A;
+
+  /* Semantic */
+  --color-success:    #1A7A4A;
+  --color-success-lt: #E6F5EE;
+  --color-info:       #1A5E9C;
+  --color-info-lt:    #E6F0FB;
+  --color-warn:       #8A5A00;
+  --color-warn-lt:    #FDF3DC;
+  --color-danger:     #9C2020;
+  --color-danger-lt:  #FCEAEA;
+
+  /* AI */
+  --color-ai:    #4A1D96;
+  --color-ai-lt: #F5F0FF;
+  --color-ai-md: #C4B5FD;
+  --color-ai-dk: #3B0764;
+
+  /* Fonts */
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Border radii */
+  --radius-ism-xs:  4px;
+  --radius-ism-sm:  8px;
+  --radius-ism:     12px;
+  --radius-ism-lg:  16px;
+  --radius-ism-xl:  20px;
+  --radius-ism-2xl: 28px;
+
+  /* Shadows */
+  --shadow-ism-sm: 0 1px 3px rgba(61, 31, 0, .08), 0 1px 2px rgba(61, 31, 0, .05);
+  --shadow-ism:    0 4px 16px rgba(61, 31, 0, .10), 0 2px 6px rgba(61, 31, 0, .06);
+  --shadow-ism-lg: 0 16px 48px rgba(61, 31, 0, .16), 0 4px 14px rgba(61, 31, 0, .08);
+  --shadow-ism-ai: 0 8px 32px rgba(74, 29, 150, .18), 0 2px 8px rgba(74, 29, 150, .1);
+}
