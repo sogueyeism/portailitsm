@@ -272,6 +272,16 @@ app.post('/api/auth/sso/callback', async (req, res) => {
     return res.status(503).json({ error: 'SSO OneLogin non configure. Renseignez les parametres dans le back office.' })
   }
 
+  // Validate issuer is a proper HTTPS URL to prevent SSRF
+  try {
+    const issuerUrl = new URL(issuer)
+    if (issuerUrl.protocol !== 'https:') {
+      return res.status(400).json({ error: 'Issuer URL must use HTTPS' })
+    }
+  } catch {
+    return res.status(400).json({ error: 'Issuer URL invalide' })
+  }
+
   try {
     // Exchange code for tokens
     const tokenRes = await fetch(`${issuer}/oidc/2/token`, {
@@ -1423,11 +1433,14 @@ app.post('/api/glpi/sync', async (req, res) => {
 
     for (const { demandId, glpiTicketId, currentGlpiStatus, userEmail: reqEmail, userName: reqName, titre: reqTitre } of tickets) {
       // Extract numeric ID from "GLPI-54"
-      const numId = String(glpiTicketId).replace(/\D/g, '')
-      if (!numId) continue
+      const numId = parseInt(String(glpiTicketId).replace(/\D/g, ''), 10)
+      if (!numId || isNaN(numId) || numId <= 0 || numId > 999999999) continue
+
+      // Construct URL safely using validated integer — prevents SSRF
+      const safeTicketUrl = `${GLPI_API_URL}/Ticket/${numId}`
 
       try {
-        const ticketRes = await fetch(`${GLPI_API_URL}/Ticket/${numId}`, {
+        const ticketRes = await fetch(safeTicketUrl, {
           headers: {
             'Content-Type': 'application/json',
             'App-Token': GLPI_APP_TOKEN,
